@@ -1,0 +1,42 @@
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: scaa
+          uri: lb://scaa
+          predicates:
+            - Path=/api/scaa/**
+          filters:
+            - StripPrefix=2
+        - id: asscache
+          uri: lb://asscache
+          predicates:
+            - Path=/api/asscache/**
+          filters:
+            - StripPrefix=2
+  application:
+    name: API-Gateway
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URI:http://naming-server:8761/eureka/}
+  instance:
+    hostname: ${HOSTNAME}
+    preferIpAddress: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      enabled: true
+server:
+  port: 8765

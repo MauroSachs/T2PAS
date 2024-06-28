@@ -1,0 +1,59 @@
+version: '3.8'
+services:
+  naming-server:
+    build:
+      context: ./naming-server  # Diretório onde está localizado o Dockerfile do naming-server
+    ports:
+      - "8761:8761"
+    networks:
+      - mynetwork
+
+  asscache:
+    build:
+      context: ./asscache
+    ports:
+      - "8081"
+    depends_on:
+      - rabbitmq
+      - naming-server
+    environment:
+      - EUREKA_SERVER_URL=http://naming-server:8761/eureka
+    networks:
+      - mynetwork
+
+  scaa:
+    build:
+      context: ./scaa
+    ports:
+      - "8082:8082"
+    depends_on:
+      - rabbitmq
+      - naming-server
+    environment:
+      - EUREKA_SERVER_URL=http://naming-server:8761/eureka
+    networks:
+      - mynetwork
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - mynetwork
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    ports:
+      - "8765:8765"
+    depends_on:
+      - naming-server
+    environment:
+      - EUREKA_SERVER_URL=http://naming-server:8761/eureka
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
