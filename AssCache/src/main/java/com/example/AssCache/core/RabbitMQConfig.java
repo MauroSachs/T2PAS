@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
 
     public static final String FANOUT_EXCHANGE_NAME = "assinatura.update.exchange";
-    public static final String QUEUE_NAME = "assinatura.update.queue";
+    public static final String QUEUE_NAME = "assinatura.update.queue" + Math.random() * 1000;
 
     @Bean
     public FanoutExchange fanoutExchange() {
@@ -24,7 +24,7 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue queue() {
-        return new Queue(QUEUE_NAME, true);
+        return new Queue(QUEUE_NAME);
     }
 
     @Bean

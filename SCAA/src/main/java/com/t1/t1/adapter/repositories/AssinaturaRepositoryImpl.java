@@ -49,6 +49,10 @@ public class AssinaturaRepositoryImpl implements AssinaturaRepository {
     @Override
     public AssinaturaEntity getAssinatura(Long id) {
         AssinaturaModel assinaturaModel = datasourcesAssinaturaLocal.getAssinatura(id);
+        if (assinaturaModel == null) {
+            return null;
+        }
+
         AssinaturaEntity assinatura = assinaturaModel.toEntity();
         assinatura.setPagamentos(assinaturaModel.getPagamentos().stream().map(PagamentoModel::toEntity).collect(Collectors.toList()));
         return assinatura;

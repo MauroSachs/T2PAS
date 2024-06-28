@@ -72,4 +72,5 @@ public class AssinaturaService {
 
             return assinatura != null && assinatura.getFimVigencia().isAfter(LocalDate.now());
     }
+
 }

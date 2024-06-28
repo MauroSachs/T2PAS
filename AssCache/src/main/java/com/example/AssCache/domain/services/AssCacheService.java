@@ -22,7 +22,10 @@ public class AssCacheService {
 
     public boolean verificarAssinatura(Long id) {
         LocalDate dataVencimento = consultarAssinaturaLocalmente(id);
-        return dataVencimento != null && dataVencimento.isAfter(LocalDate.now());
+        if (dataVencimento == null) {
+            throw new RuntimeException("Assinatura não encontrada");
+        }
+        return dataVencimento.isAfter(LocalDate.now());
     }
 
     private LocalDate consultarAssinaturaLocalmente(Long id) {

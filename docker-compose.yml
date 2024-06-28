@@ -16,8 +16,14 @@ services:
     depends_on:
       - rabbitmq
       - naming-server
+      - scaa
     environment:
       - EUREKA_SERVER_URL=http://naming-server:8761/eureka
+      - SCAA_URL=http://scaa:8080
+      - spring.rabbitmq.host=rabbitmq
+      - spring.rabbitmq.port=5672
+      - spring.rabbitmq.username=guest
+      - spring.rabbitmq.password=guest
     networks:
       - mynetwork
 
@@ -25,12 +31,16 @@ services:
     build:
       context: ./scaa
     ports:
-      - "8082:8082"
+      - "8080:8080"
     depends_on:
       - rabbitmq
       - naming-server
     environment:
       - EUREKA_SERVER_URL=http://naming-server:8761/eureka
+      - spring.rabbitmq.host=rabbitmq
+      - spring.rabbitmq.port=5672
+      - spring.rabbitmq.username=guest
+      - spring.rabbitmq.password=guest
     networks:
       - mynetwork
 
@@ -39,6 +49,9 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
     networks:
       - mynetwork
 

@@ -9,6 +9,7 @@ import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.time.LocalDate;
+import java.util.logging.Logger;
 
 public class PagamentoService {
 
@@ -16,6 +17,7 @@ public class PagamentoService {
     final AssinaturaRepository assinaturaRepository;
     final RabbitTemplate rabbitTemplate;
     final FanoutExchange fanoutExchange;
+    final Logger logger = Logger.getLogger(PagamentoService.class.getName());
 
     public PagamentoService(PagamentoRepository pagamentoRepository, AssinaturaRepository assinaturaRepository, RabbitTemplate rabbitTemplate, FanoutExchange fanoutExchange) {
         this.pagamentoRepository = pagamentoRepository;
@@ -71,9 +73,14 @@ public class PagamentoService {
     }
 
     private void enviarMensagemAtualizacaoAssinatura(AssinaturaEntity assinaturaEntity) {
-        //preciso enviar id e data de vencimento formato = id:dataVencimento
-        String message = assinaturaEntity.getId() + ":" + assinaturaEntity.getFimVigencia();
-        rabbitTemplate.convertAndSend(fanoutExchange.getName(), "", message);
+        try {
+            logger.info("Enviando mensagem de atualização de assinatura para a assinatura " + assinaturaEntity.getId() + " - Nova data de pagamento: " + assinaturaEntity.getFimVigencia());
+            //preciso enviar id e data de vencimento formato = id:dataVencimento
+            String message = assinaturaEntity.getId() + ":" + assinaturaEntity.getFimVigencia();
+            rabbitTemplate.convertAndSend(fanoutExchange.getName(), "", message);
+        } catch (Exception e) {
+            logger.warning("Erro ao enviar mensagem de atualização de assinatura para a assinatura " + e.getMessage());
+        }
 
     }
 }
